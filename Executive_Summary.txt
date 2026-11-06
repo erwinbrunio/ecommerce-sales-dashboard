@@ -1,0 +1,15 @@
+================================================================================
+E-COMMERCE COMMERCIAL PERFORMANCE & RETENTION ANALYTICS: EXECUTIVE SUMMARY
+================================================================================
+• Net Realized Revenue: Generated ₱6,823,900.13 across 15,000 distinct orders (37,501 line items).
+• Basket Efficiency: Enterprise Average Order Value (AOV) settled at ₱454.93 with 2.50 items per order.
+• Healthy Operating Profitability: Delivered ₱2,005,627.07 in total gross profit, sustaining a 29.39% margin.
+• Omnichannel Revenue Parity: Sales are evenly split across Web (33.63%), Marketplace (33.29%), and Mobile App (33.07%).
+• Web Channel Premium: Web drives the highest transaction AOV at ₱461.97 vs. Mobile App (₱452.75) and Marketplace (₱450.14).
+• Core Profit Anchors: Toys (₱952.4K / 30.3% margin) and Electronics (₱927.5K / 31.0% margin) lead category performance.
+• Geographic Diversification: Demand spans 6 Philippine regions, led by Central Luzon (₱1.17M) and Central Visayas (₱1.15M).
+• High Customer Retention: 84.14% repeat customer rate (4,001 repeat buyers out of 4,755 active user accounts).
+• Post-Purchase Operational Leakage: 1,235 cancellations (8.23%) and 578 returns (3.85%) create a 12.09% transaction attrition rate.
+• Controllable Return Drivers: 84.83% of returns stem from merchant-controllable issues (defects, missing parts, fit errors, mispicks).
+• Pricing Discipline: Median promotional discount held at 6.00% (75th percentile at 12.00%), protecting product unit economics.
+================================================================================
