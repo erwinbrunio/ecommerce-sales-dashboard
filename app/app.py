@@ -29,45 +29,66 @@ def format_currency_compact(val: float) -> str:
   else:
     return f"₱{val:,.2f}"
 
+from pathlib import Path
+import os
+import pandas as pd
+import streamlit as st
+
 # ==============================================================================
 # 2. HIGH-PERFORMANCE DATA INGESTION
-# Cached in memory to eliminate redundant disk reads across filter updates
+# Dynamically anchored to the repository root directory
 # ==============================================================================
 @st.cache_data
 def load_analytical_data():
-  # Robust loader: prefer high-speed Parquet, fallback to CSV if needed
-  parquet_path = "clean_data/fact_sales.parquet"
-  csv_path = "clean_data/fact_sales.csv"
+    # Path(__file__) is app/app.py -> .parent is app/ -> .parent.parent is repo root
+    repo_root = Path(__file__).resolve().parent.parent
 
-  if os.path.exists(parquet_path):
-    df = pd.read_parquet(parquet_path)
-  elif os.path.exists(csv_path):
-    df = pd.read_csv(csv_path)
-  else:
-    st.error(
-        f"Data file not found. Ensure '{parquet_path}' exists in your"
-        " directory."
-    )
-    st.stop()
+    # Candidate paths: check data/processed/ first, then fallbacks
+    parquet_path = repo_root / "data" / "processed" / "fact_sales.parquet"
+    csv_path = repo_root / "data" / "processed" / "fact_sales.csv"
+    fallback_clean_parquet = repo_root / "clean_data" / "fact_sales.parquet"
 
-  # Ensure date formats match Streamlit calendar widgets
-  df["order_date"] = pd.to_datetime(df["order_date"]).dt.date
-  df["year_month"] = df["year_month"].astype(str)
+    if parquet_path.exists():
+        df = pd.read_parquet(parquet_path)
+    elif fallback_clean_parquet.exists():
+        df = pd.read_parquet(fallback_clean_parquet)
+    elif csv_path.exists():
+        df = pd.read_csv(csv_path)
+    else:
+        st.error(
+            f"Data file not found. Looked in:\n"
+            f"- {parquet_path}\n"
+            f"- {fallback_clean_parquet}\n"
+            f"- {csv_path}\n\n"
+            f"Please verify that fact_sales.parquet is committed to GitHub."
+        )
+        st.stop()
 
-  # Optimize categorical columns for fast memory indexing during filtering
-  categorical_dims = [
-      "category",
-      "sales_channel",
-      "region_name",
-      "loyalty_tier",
-      "order_status",
-  ]
-  for col in categorical_dims:
-    if col in df.columns:
-      df[col] = df[col].astype("category")
+    # Ensure robust date conversions
+    if "order_date" in df.columns:
+        df["order_date"] = pd.to_datetime(df["order_date"]).dt.date
+    elif "order_datetime" in df.columns:
+        df["order_datetime"] = pd.to_datetime(df["order_datetime"])
+        df["order_date"] = df["order_datetime"].dt.date
 
-  return df
+    if "year_month" not in df.columns and "order_datetime" in df.columns:
+        df["year_month"] = df["order_datetime"].dt.to_period("M").astype(str)
+    elif "year_month" in df.columns:
+        df["year_month"] = df["year_month"].astype(str)
 
+    # Memory optimization: Convert repeated strings to categorical types
+    categorical_dims = [
+        "category",
+        "sales_channel",
+        "region_name",
+        "loyalty_tier",
+        "order_status",
+    ]
+    for col in categorical_dims:
+        if col in df.columns:
+            df[col] = df[col].astype("category")
+
+    return df
 
 # Ingest fact table once into RAM
 fact_df = load_analytical_data()
